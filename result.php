@@ -1,48 +1,42 @@
 <?php
-require_once './functions.php';
+session_start();
 
-$caratteri_maiuscoli = true;
-$caratteri_minuscoli = true;
-$numeri = true;
-$simboli = true;
-$lunghezza_password = '';
+require_once './functions.php';
 
 $password = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['lunghezza_password'])) {
-    if (isset($_GET["lunghezza_password"]) && is_numeric($_GET["lunghezza_password"]) && $_GET["lunghezza_password"] >= 1 && $_GET["lunghezza_password"] <= 50) {
-        $lunghezza_password = (int)$_GET["lunghezza_password"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lunghezza_password'])) {
+    if (isset($_POST["lunghezza_password"]) && is_numeric($_POST["lunghezza_password"]) && $_POST["lunghezza_password"] >= 1 && $_POST["lunghezza_password"] <= 50) {
+        $_SESSION['lunghezza_password'] = (int)$_POST["lunghezza_password"];
     }
 
-    if (!isset($_GET["caratteri_maiuscoli"]) || !$_GET["caratteri_maiuscoli"] == 'on') {
-        $caratteri_maiuscoli = false;
-    }
+    $_SESSION['caratteri_maiuscoli'] = isset($_POST["caratteri_maiuscoli"]);
+    $_SESSION['caratteri_minuscoli'] = isset($_POST["caratteri_minuscoli"]);
+    $_SESSION['numeri'] = isset($_POST["numeri"]);
+    $_SESSION['simboli'] = isset($_POST["simboli"]);
 
-    if (!isset($_GET["caratteri_minuscoli"]) || !$_GET["caratteri_minuscoli"] == 'on') {
-        $caratteri_minuscoli = false;
-    }
-
-    if (!isset($_GET["numeri"]) || !$_GET["numeri"] == 'on') {
-        $numeri = false;
-    }
-
-    if (!isset($_GET["simboli"]) || !$_GET["simboli"] == 'on') {
-        $simboli = false;
-    }
+    $lunghezza_password = $_SESSION['lunghezza_password'];
+    $caratteri_maiuscoli = $_SESSION['caratteri_maiuscoli'];
+    $caratteri_minuscoli = $_SESSION['caratteri_minuscoli'];
+    $numeri = $_SESSION['numeri'];
+    $simboli = $_SESSION['simboli'];
 
     if (!$caratteri_maiuscoli && !$caratteri_minuscoli && !$numeri && !$simboli) {
         $error = 'Devi selezionare almeno una delle opzioni!';
     }
 
-    if (!$lunghezza_password) {
-        $error = 'Scemo come te la genero la password se non metti la lunghezza, mica te la seleziono io di default, non devo fare il tuo lavoro <br> <br> Vai a sistemarlo va!';
+    if (empty($error)) {
+        $password = password_generator($lunghezza_password, $caratteri_maiuscoli, $caratteri_minuscoli, $numeri, $simboli);
     }
 
-    if ($error == '') {
-        $password = \password_generator($lunghezza_password, $caratteri_maiuscoli, $caratteri_minuscoli, $numeri, $simboli);
-    }
+    $_SESSION['password'] = $password;
+    $_SESSION['error'] = $error;
 }
+
+$password = $_SESSION['password'] ?? '';
+$error = $_SESSION['error'] ?? '';
+
 ?>
 
 <!DOCTYPE html>
@@ -68,6 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['lunghezza_password'])) 
                 <h3 class="text-danger"><?php echo ($error); ?></h3>
             </div>
         <?php endif; ?>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <div class="btn btn-primary col-2" onclick="window.location.href = './index.php'"> Torna alla selezione</div>
     </div>
 </body>
 

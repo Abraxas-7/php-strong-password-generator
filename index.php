@@ -1,11 +1,12 @@
 <?php
+session_start();
 require_once './functions.php';
 
-$caratteri_maiuscoli = true;
-$caratteri_minuscoli = true;
-$numeri = true;
-$simboli = false;
-$lunghezza_password = 16;
+$lunghezza_password = $_SESSION['lunghezza_password'] ?? '16';
+$caratteri_maiuscoli = $_SESSION['caratteri_maiuscoli'] ?? true;
+$caratteri_minuscoli = $_SESSION['caratteri_minuscoli'] ?? true;
+$numeri = $_SESSION['numeri'] ?? true;
+$simboli = $_SESSION['simboli'] ?? false;
 
 ?>
 
@@ -23,12 +24,12 @@ $lunghezza_password = 16;
     <div class="container p-5">
         <h1 class="text-center">Generatore password</h1>
         <div>
-            <form action="./result.php" method="get">
+            <form action="./result.php" method="post">
                 <div class="mb-3 d-flex justify-content-center align-items-center row my-5">
                     <!-- Lunghezza -->
                     <div class="col-4">
                         <label for="lunghezza" class="form-label">Lunghezza della password</label>
-                        <input type="number" min="1" max="50" class="form-control" id="lunghezza" name="lunghezza_password" value="<?= $lunghezza_password ?>" placeholder="Inserisci la lunghezza della password">
+                        <input type="number" min="1" max="50" class="form-control" id="lunghezza" name="lunghezza_password" value="<?= $lunghezza_password ?>" placeholder="Inserisci la lunghezza della password" required>
                     </div>
 
                     <!-- Opzioni -->
