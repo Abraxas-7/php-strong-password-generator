@@ -1,73 +1,12 @@
 <?php
-function password_generator(int $lunghezza_password, bool $caratteri_maiuscoli, bool $caratteri_minuscoli, bool $numeri, bool $simboli): string
-{
-    $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $lowercase = 'abcdefghijklmnopqrstuvwxyz';
-    $numbers = '0123456789';
-    $symbols = '!@#$%^&*()-_=+[]{}|;:,.<>?';
-
-    $characters = '';
-
-    if ($caratteri_maiuscoli) {
-        $characters .= $uppercase;
-    }
-    if ($caratteri_minuscoli) {
-        $characters .= $lowercase;
-    }
-    if ($numeri) {
-        $characters .= $numbers;
-    }
-    if ($simboli) {
-        $characters .= $symbols;
-    }
-
-    $password = '';
-
-    for ($i = 0; $i < $lunghezza_password; $i++) {
-        $password .= $characters[rand(0, strlen($characters) - 1)];
-    }
-
-    return $password;
-}
+require_once './functions.php';
 
 $caratteri_maiuscoli = true;
 $caratteri_minuscoli = true;
 $numeri = true;
-$simboli = true;
+$simboli = false;
 $lunghezza_password = 16;
 
-$password = '';
-$error = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['lunghezza_password'])) {
-    if (isset($_GET["lunghezza_password"]) && is_numeric($_GET["lunghezza_password"]) && $_GET["lunghezza_password"] >= 1 && $_GET["lunghezza_password"] <= 50) {
-        $lunghezza_password = (int)$_GET["lunghezza_password"];
-    }
-
-    if (!isset($_GET["caratteri_maiuscoli"]) || !$_GET["caratteri_maiuscoli"] == 'on') {
-        $caratteri_maiuscoli = false;
-    }
-
-    if (!isset($_GET["caratteri_minuscoli"]) || !$_GET["caratteri_minuscoli"] == 'on') {
-        $caratteri_minuscoli = false;
-    }
-
-    if (!isset($_GET["numeri"]) || !$_GET["numeri"] == 'on') {
-        $numeri = false;
-    }
-
-    if (!isset($_GET["simboli"]) || !$_GET["simboli"] == 'on') {
-        $simboli = false;
-    }
-
-    if (!$caratteri_maiuscoli && !$caratteri_minuscoli && !$numeri && !$simboli) {
-        $error = 'Devi selezionare almeno una delle opzioni!';
-    }
-
-    if ($error == '') {
-        $password = password_generator($lunghezza_password, $caratteri_maiuscoli, $caratteri_minuscoli, $numeri, $simboli);
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['lunghezza_password'])) 
     <div class="container p-5">
         <h1 class="text-center">Generatore password</h1>
         <div>
-            <form action="" method="get">
+            <form action="./result.php" method="get">
                 <div class="mb-3 d-flex justify-content-center align-items-center row my-5">
                     <!-- Lunghezza -->
                     <div class="col-4">
@@ -122,18 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['lunghezza_password'])) 
                 </div>
             </form>
         </div>
-
-        <?php if ($password): ?>
-            <div class="mt-4 text-center">
-                <h3>Password generata: <code class="fw-bold "><?php echo ($password); ?></code></h3>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($error): ?>
-            <div class="mt-4 text-center">
-                <h3 class="text-danger"><?php echo ($error); ?></h3>
-            </div>
-        <?php endif; ?>
     </div>
 </body>
 
